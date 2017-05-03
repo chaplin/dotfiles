@@ -1,0 +1,44 @@
+[alias]
+       graph = log --graph --oneline --date-order --decorate --color --all
+       st = status
+       ci = commit
+       br = branch
+  co = checkout
+  pl = pull --ff-only
+[core]
+  excludesfile = /Users/capa/.gitignore_global
+  pager = diff-highlight | diff-so-fancy | less --tabs=4 -RFX
+  autocrlf = input
+# so much color
+
+[color]
+  ui = always
+[color "diff"]
+  meta = yellow bold
+  commit = green bold
+  frag = magenta bold
+  old = red bold
+  new = green bold
+  whitespace = red reverse
+[color "diff-highlight"]
+  oldNormal = red bold
+  oldHighlight = "red bold 52"
+  newNormal = "green bold"
+  newHighlight = "green bold 22"
+[color "branch"]
+  current = yellow reverse
+  local = yellow
+  remote = green
+[color "status"]
+  added = yellow
+  changed = green
+  untracked = cyan
+
+[mergetool]
+  keepBackup = true
+[difftool "sourcetree"]
+  cmd = opendiff \"$LOCAL\" \"$REMOTE\"
+  path =
+[mergetool "sourcetree"]
+  cmd = /Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+  trustExitCode = true
