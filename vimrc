@@ -1,3 +1,5 @@
+let mapleader=","
+
 set autoread
 set ruler
 set number
@@ -6,7 +8,8 @@ set cursorcolumn                         "highlight the current column. Visible 
 set colorcolumn=80
 set clipboard+=unnamed
 set backspace=2
-
+set title " Show the filename in the window titlebar
+set ttyfast " Send more characters at a given time
 set wildchar=<TAB> " Character for CLI expansion (TAB-completion)
 set wildignore+=.DS_Store
 set wildignore+=*.jpg,*.jpeg,*.gif,*.png,*.gif,*.psd,*.o,*.obj,*.min.js
@@ -25,13 +28,42 @@ set foldmethod=syntax " Syntax are used to specify folds
 set foldminlines=0 " Allow folding single lines
 set foldnestmax=5 " Set max fold nesting level
 
+set hlsearch " Highlight searches
+set incsearch " Highlight dynamically as pattern is typed
+set wrapscan "wrap around serch results
+set noshowmode " Don't show the current mode (airline.vim takes care of us)
+
+set nowrap
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Colors and Fonts
+" => Buffer
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"
+augroup buffer_control
+  " Buffer navigation (,,) (gb) (gB) (,ls)
+  map <Leader>, <C-^>
+  map <Leader>ls :buffers<CR>
+  map gb :bnext<CR>
+  map gB :bprev<CR>
+  
+  " Jump to buffer number (<N>gb) {{{
+  let c = 1
+  while c <= 99
+    execute "nnoremap " . c . "gb :" . c . "b\<CR>"
+    let c += 1
+  endwhile
+  " }}}
+
+augroup END
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Theme, Colors and Fonts
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Enable syntax highlighting
 syntax enable
 
-colorscheme jellybeans
+set background=dark
+colorscheme hybrid_material 
 
 " Set extra options when running in GUI mode
 if has("gui_running")
@@ -62,9 +94,9 @@ set expandtab
 " Be smart when using tabs ;)
 set smarttab
 
-" 1 tab == 4 spaces
-set shiftwidth=4
-set tabstop=4
+" 1 tab == 2 spaces
+set shiftwidth=2
+set tabstop=2
 
 " Linebreak on 500 characters
 set lbr
@@ -85,7 +117,12 @@ autocmd BufReadPost *
 " Remember info about open buffers on close
 set viminfo^=%
 
-
+""""""""""""""""""""""""""""""
+" => Center search results 
+""""""""""""""""""""""""""""""
+"
+nnoremap n nzz
+nnoremap N Nzz
 
 """"""""""""""""""""""""""""""
 " => Status line
@@ -105,11 +142,17 @@ function! HasPaste()
 endfunction
 
 """"""""""""""""""""""""""""""
-" => NERDTree 
+" => Copy file path 
 """"""""""""""""""""""""""""""
 "
-nmap ,n :NERDTreeFind<CR>
-nmap ,m :NERDTreeToggle<CR>
+" Expand current file path
+
+nnoremap n nzz
+nnoremap N Nzz
+nnoremap * *zz
+nnoremap # #zz
+nnoremap g* g*zz
+nnoremap g# g#zz
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => NerdTree
@@ -119,8 +162,8 @@ autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTreeToggle | endif
 
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
-map <C-n> :NERDTreeToggle<CR>
 map <Leader>n <plug>NERDTreeTabsToggle<CR>
+nmap ,m :NERDTreeFind<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Emmet.vim
@@ -128,6 +171,22 @@ map <Leader>n <plug>NERDTreeTabsToggle<CR>
 "
 imap <expr> <tab> emmet#expandAbbrIntelligent("\<tab>")
 
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => CtrlP.vim {{{
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"
+augroup ctrlp_config
+  autocmd!
+  let g:ctrlp_clear_cache_on_exit = 0 " Do not clear filenames cache, to improve CtrlP startup
+  let g:ctrlp_lazy_update = 350 " Set delay to prevent extra search
+  let g:ctrlp_match_func = { 'match': 'pymatcher#PyMatch' } " Use python fuzzy matcher for better performance
+  let g:ctrlp_match_window_bottom = 0 " Show at top of window
+  let g:ctrlp_max_files = 0 " Set no file limit, we are building a big project
+  let g:ctrlp_switch_buffer = 'Et' " Jump to tab AND buffer if already open
+  let g:ctrlp_open_new_file = 'r' " Open newly created files in the current window
+  let g:ctrlp_open_multiple_files = 'ij' " Open multiple files in hidden buffers, and jump to the first one
+augroup END
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Airline
@@ -147,29 +206,15 @@ augroup airline_config
 augroup END
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Netrw
-" """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" @ref https://shapeshed.com/vim-netrw/
-
-let g:netrw_banner = 0
-let g:netrw_liststyle = 3
-let g:netrw_browse_split = 4
-let g:netrw_altv = 1
-let g:netrw_winsize = 25
-"augroup ProjectDrawer
-"    autocmd!
-"    autocmd VimEnter * :Vexplore
-"augroup END
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Syntastic.vim 
 " """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "
-
 augroup syntastic_config
   autocmd!
   let g:syntastic_error_symbol = '✗'
   let g:syntastic_warning_symbol = '⚠'
+  let g:syntastic_html_tidy_exec = 'tidy5'
+  let g:loaded_syntastic_scss_sass_checker = 1
 augroup END
 
 
@@ -197,8 +242,12 @@ Plug 'mattn/emmet-vim'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-surround'
 Plug 'scrooloose/syntastic'
 Plug 'airblade/vim-gitgutter'
+Plug 'terryma/vim-multiple-cursors'
+Plug 'ctrlpvim/ctrlp.vim'
+Plug 'kristijanhusak/vim-hybrid-material'
 
 " Initialize plugin system
 call plug#end()
