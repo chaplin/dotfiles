@@ -1,3 +1,4 @@
+set encoding=utf-8
 let mapleader=","
 
 set autoread
@@ -23,7 +24,8 @@ set listchars=eol:¬,tab:>·,trail:~,extends:>,precedes:<,space:␣
 
 set foldcolumn=0 " Column to show folds
 set foldenable " Enable folding
-set foldlevel=0 " Close all folds by default
+"set foldlevel=0 " Close all folds by default
+set foldlevelstart=20
 set foldmethod=syntax " Syntax are used to specify folds
 set foldminlines=0 " Allow folding single lines
 set foldnestmax=5 " Set max fold nesting level
@@ -146,7 +148,13 @@ endfunction
 """"""""""""""""""""""""""""""
 "
 " Expand current file path
+nmap <leader>cn :let @*=expand("%")<CR>
+nmap <leader>cfp :let @*=expand("%:p")<CR>
 
+""""""""""""""""""""""""""""""
+" => Center search results 
+""""""""""""""""""""""""""""""
+"
 nnoremap n nzz
 nnoremap N Nzz
 nnoremap * *zz
@@ -171,22 +179,6 @@ nmap ,m :NERDTreeFind<CR>
 "
 imap <expr> <tab> emmet#expandAbbrIntelligent("\<tab>")
 
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => CtrlP.vim {{{
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"
-augroup ctrlp_config
-  autocmd!
-  let g:ctrlp_clear_cache_on_exit = 0 " Do not clear filenames cache, to improve CtrlP startup
-  let g:ctrlp_lazy_update = 350 " Set delay to prevent extra search
-  let g:ctrlp_match_func = { 'match': 'pymatcher#PyMatch' } " Use python fuzzy matcher for better performance
-  let g:ctrlp_match_window_bottom = 0 " Show at top of window
-  let g:ctrlp_max_files = 0 " Set no file limit, we are building a big project
-  let g:ctrlp_switch_buffer = 'Et' " Jump to tab AND buffer if already open
-  let g:ctrlp_open_new_file = 'r' " Open newly created files in the current window
-  let g:ctrlp_open_multiple_files = 'ij' " Open multiple files in hidden buffers, and jump to the first one
-augroup END
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Airline
@@ -227,6 +219,26 @@ augroup END
 filetype plugin indent on
 set omnifunc=syntaxcomplete#Complete
 
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => FZF 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"
+let $FZF_DEFAULT_COMMAND = 'rg --files -g ""'
+nmap ; :Buffers<CR>
+nmap <Leader>t :Files<CR>
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => ack.vim 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"
+if executable('rg')
+  let g:ackprg = 'rg --vimgrep'
+endif
+cnoreabbrev Ack Ack!
+nnoremap <Leader>a :Ack <cword><cr>
+"command! -bang -nargs=* Find call fzf#vim#grep('rg --column --line-number --no-heading --fixed-strings --ignore-case --no-ignore --hidden --follow --glob "!.git/*" --color "always" '.shellescape(<q-args>).'| tr -d "\017"', 1, <bang>0)
+
 " Specify a directory for plugins (for Neovim: ~/.local/share/nvim/plugged)
 call plug#begin('~/.vim/plugged')
 
@@ -237,7 +249,6 @@ Plug 'HerringtonDarkholme/yats.vim'
 Plug 'scrooloose/nerdtree'
 Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'jistr/vim-nerdtree-tabs'
-Plug 'wincent/command-t'
 Plug 'mattn/emmet-vim'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
@@ -246,8 +257,13 @@ Plug 'tpope/vim-surround'
 Plug 'scrooloose/syntastic'
 Plug 'airblade/vim-gitgutter'
 Plug 'terryma/vim-multiple-cursors'
-Plug 'ctrlpvim/ctrlp.vim'
 Plug 'kristijanhusak/vim-hybrid-material'
+Plug 'pearofducks/ansible-vim'
+Plug 'leafgarland/typescript-vim'
+Plug 'edkolev/tmuxline.vim'
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plug 'junegunn/fzf.vim'
+Plug 'mileszs/ack.vim'
 
 " Initialize plugin system
 call plug#end()
