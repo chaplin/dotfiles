@@ -239,6 +239,16 @@ cnoreabbrev Ack Ack!
 nnoremap <Leader>a :Ack <cword><cr>
 "command! -bang -nargs=* Find call fzf#vim#grep('rg --column --line-number --no-heading --fixed-strings --ignore-case --no-ignore --hidden --follow --glob "!.git/*" --color "always" '.shellescape(<q-args>).'| tr -d "\017"', 1, <bang>0)
 
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => w0rp/ale 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"
+let g:airline#extensions#ale#enabled = 1 " show errors or warnings in statusline
+let g:ale_sign_error = '●' " Less aggressive than the default '>>'
+let g:ale_sign_warning = '.'
+let g:ale_lint_on_enter = 0 " Less distracting when opening a new file
+
 " Specify a directory for plugins (for Neovim: ~/.local/share/nvim/plugged)
 call plug#begin('~/.vim/plugged')
 
@@ -264,6 +274,8 @@ Plug 'edkolev/tmuxline.vim'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 Plug 'mileszs/ack.vim'
+Plug 'w0rp/ale'
+Plug 'tpope/vim-eunuch'
 
 " Initialize plugin system
 call plug#end()
